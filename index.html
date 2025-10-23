@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Premium Contents</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #1e1e2f;
+      --card-color: #2c2c3e;
+      --text-color: #fff;
+      --accent-color: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
+    }
+
+    [data-theme="light"] {
+      --bg-color: #f5f5f5;
+      --card-color: #ffffff;
+      --text-color: #333;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .container {
+      background: var(--card-color);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .rainbow-text {
+      font-size: 1.8rem;
+      font-weight: 600;
+      background: var(--accent-color);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: hue 4s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .rainbow-price {
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: var(--accent-color);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: hue 4s linear infinite;
+      margin: 10px 0;
+    }
+
+    @keyframes hue {
+      from { filter: hue-rotate(0deg); }
+      to { filter: hue-rotate(360deg); }
+    }
+
+    .preview {
+      margin: 20px 0;
+    }
+
+    .preview img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      display: block;
+    }
+
+    .price-info {
+      margin: 15px 0;
+    }
+
+    .original-price {
+      text-decoration: line-through;
+      color: #aaa;
+      font-size: 1.2rem;
+    }
+
+    .discounted-price {
+      background: #4CAF50;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .buyers-count {
+      font-size: 0.9rem;
+      color: #4CAF50;
+      margin-bottom: 15px;
+    }
+
+    .countdown {
+      background: rgba(0,0,0,0.2);
+      padding: 10px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: bold;
+    }
+
+    .price-button {
+      background: var(--accent-color);
+      color: #fff;
+      font-weight: bold;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    .price-button:hover {
+      transform: scale(1.05);
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 998;
+    }
+
+    .popup {
+      background: var(--card-color);
+      color: var(--text-color);
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 350px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 999;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+
+    .popup img {
+      width: 80%;
+      max-width: 180px;
+      height: auto;
+      margin: 0 auto 15px;
+      display: block;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
+      background: var(--card-color);
+      color: var(--text-color);
+    }
+
+    .file-input-container {
+      width: 100%;
+      margin: 10px 0;
+      text-align: left;
+    }
+
+    .file-input-label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .file-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: var(--card-color);
+      color: var(--text-color);
+      font-size: 0.9rem;
+    }
+
+    .file-input::file-selector-button {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .confirm-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: var(--accent-color);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .confirm-btn .loader {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .success-message {
+      display: none;
+      background: #4CAF50;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .error-message {
+      display: none;
+      background: #f44336;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 480px) {
+      .rainbow-text {
+        font-size: 1.4rem;
+      }
+      .rainbow-price {
+        font-size: 1.2rem;
+      }
+      .price-button {
+        font-size: 1rem;
+        padding: 10px 20px;
+        max-width: 100%;
+      }
+      .popup {
+        padding: 20px 15px;
+      }
+      input[type="text"] {
+        font-size: 0.9rem;
+      }
+      .confirm-btn {
+        font-size: 1rem;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <div class="container">
+    <div class="rainbow-text">Unlock Premium Contents</div>
+    <div class="preview">
+      <img src="https://ik.imagekit.io/acsayebnbb/photo_2025-06-10_00-32-59.jpg" alt="Preview Image" />
+      <div style="font-weight: bold; color: white; margin-top: 10px;">Premium Channel 1000+ Videos</div>
+    </div>
+
+    <div class="price-info">
+      <span class="original-price">₹149</span>
+      <span class="discounted-price">₹49/- ONLY</span>
+    </div>
+
+    <div class="buyers-count">1208+ Buyers</div>
+
+    <div class="countdown" id="countdown">
+      ⏳ Offer ends in: <span id="timer">05:00</span>
+    </div>
+
+  <button class="price-button" onclick="showPopup()">₹49/- BUY NOW</button>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="closePopup()"></div>
+
+  <div class="popup" id="popup">
+    <img src="https://ik.imagekit.io/acsayebnbb/photo_2025-06-10_00-33-48.jpg" alt="QR Code" />
+    <div class="rainbow-price">₹49/-</div>
+    <p>Scan and pay using the above QR code. After payment, enter your Telegram ID or phone number and upload payment screenshot to receive access.</p>
+    
+    <input type="text" id="telegramId" placeholder="Enter Telegram ID or Number" />
+    
+    <div class="file-input-container">
+      <label class="file-input-label" for="screenshot">Upload Payment Screenshot:</label>
+      <input type="file" id="screenshot" class="file-input" accept="image/*" />
+    </div>
+    
+    <button class="confirm-btn" onclick="processPayment()">
+      <span class="btn-text">Submit Details</span>
+      <div class="loader"></div>
+    </button>
+    
+    <div class="success-message" id="successMessage">
+      ✅ Details submitted successfully! You will receive access shortly.
+    </div>
+    
+    <div class="error-message" id="errorMessage">
+      ❌ Error submitting details. Please try again.
+    </div>
+  </div>
+
+  <script>
+    // ===== NETLIFY FUNCTION CONFIGURATION =====
+    // This will automatically work with your Netlify deployment
+    const NETLIFY_FUNCTION_URL = '/.netlify/functions/telegram-webhook';
+
+    // ===== UTILITY FUNCTIONS =====
+    
+    // Function to convert image to base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    // Function to send data to Netlify function
+    async function sendToNetlifyFunction(telegramId, screenshotBase64) {
+      const payload = {
+        telegramId: telegramId,
+        screenshot: screenshotBase64,
+        amount: '₹49',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        source: 'Premium Content Site'
+      };
+
+      const response = await fetch(NETLIFY_FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Netlify function failed: ${response.status}`);
+      }
+
+      return await response.json();
+    }
+
+    // ===== MAIN APPLICATION FUNCTIONS =====
+    
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.setAttribute('data-theme', 
+        document.body.getAttribute('data-theme') === 'light' ? '' : 'light');
+      themeToggle.innerHTML = document.body.getAttribute('data-theme') === 'light' ? 
+        '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
+
+    // Countdown timer (5 minutes)
+    let timeLeft = 5 * 60;
+    const timer = document.getElementById('timer');
+    const countdown = setInterval(() => {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      if (timeLeft <= 0) clearInterval(countdown);
+      else timeLeft--;
+    }, 1000);
+
+    // Popup functions
+    function showPopup() {
+      document.getElementById("popup").style.display = "flex";
+      document.getElementById("overlay").style.display = "block";
+    }
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+      // Reset form
+      document.getElementById('telegramId').value = '';
+      document.getElementById('screenshot').value = '';
+      document.getElementById('successMessage').style.display = 'none';
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    // Payment processing with loader
+    async function processPayment() {
+      const telegramId = document.getElementById("telegramId").value.trim();
+      const screenshotFile = document.getElementById("screenshot").files[0];
+      
+      if (!telegramId) {
+        alert("Please enter your Telegram ID or phone number.");
+        return;
+      }
+      
+      if (!screenshotFile) {
+        alert("Please upload payment screenshot.");
+        return;
+      }
+
+      const btn = document.querySelector('.confirm-btn');
+      const loader = btn.querySelector('.loader');
+      const btnText = btn.querySelector('.btn-text');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      btnText.style.visibility = 'hidden';
+      loader.style.display = 'block';
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+      
+      try {
+        // Convert screenshot to base64
+        const screenshotBase64 = await fileToBase64(screenshotFile);
+        
+        // Send data to Netlify function
+        const result = await sendToNetlifyFunction(telegramId, screenshotBase64);
+        
+        if (result.success) {
+          // Show success message
+          successMessage.style.display = 'block';
+          errorMessage.style.display = 'none';
+          
+          // Redirect after 3 seconds
+          setTimeout(() => {
+            window.location.href = "https://telegram.dog/ownerayush";
+          }, 3000);
+        } else {
+          throw new Error('Netlify function returned error');
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = '❌ Error submitting details. Please contact @ownerayush directly on Telegram.';
+        
+        // Reset loader
+        loader.style.display = 'none';
+        btnText.style.visibility = 'visible';
+      }
+    }
+  </script>
+</body>
+</html>
