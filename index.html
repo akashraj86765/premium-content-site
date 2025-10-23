@@ -460,72 +460,81 @@
     }
 
     // Payment processing with loader
-    async function processPayment() {
-      const telegramId = document.getElementById("telegramId").value.trim();
-      const screenshotFile = document.getElementById("screenshot").files[0];
-      
-      if (!telegramId) {
-        alert("Please enter your Telegram ID or phone number.");
-        return;
-      }
-      
-      if (!screenshotFile) {
-        alert("Please upload payment screenshot.");
-        return;
-      }
+async function processPayment() {
+  const telegramId = document.getElementById("telegramId").value.trim();
+  const screenshotFile = document.getElementById("screenshot").files[0];
+  
+  if (!telegramId) {
+    alert("Please enter your Telegram ID or phone number.");
+    return;
+  }
+  
+  if (!screenshotFile) {
+    alert("Please upload payment screenshot.");
+    return;
+  }
 
-      // Validate file size (max 5MB)
-      if (screenshotFile.size > 5 * 1024 * 1024) {
-        alert("File size too large. Please upload an image smaller than 5MB.");
-        return;
-      }
+  // Validate file type
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  if (!validTypes.includes(screenshotFile.type)) {
+    alert("Please upload a valid image file (JPEG, PNG, GIF, or WebP).");
+    return;
+  }
 
-      const btn = document.querySelector('.confirm-btn');
-      const loader = btn.querySelector('.loader');
-      const btnText = btn.querySelector('.btn-text');
-      const successMessage = document.getElementById('successMessage');
-      const errorMessage = document.getElementById('errorMessage');
-      
-      btnText.style.visibility = 'hidden';
-      loader.style.display = 'block';
-      successMessage.style.display = 'none';
+  const btn = document.querySelector('.confirm-btn');
+  const loader = btn.querySelector('.loader');
+  const btnText = btn.querySelector('.btn-text');
+  const successMessage = document.getElementById('successMessage');
+  const errorMessage = document.getElementById('errorMessage');
+  
+  btnText.style.visibility = 'hidden';
+  loader.style.display = 'block';
+  successMessage.style.display = 'none';
+  errorMessage.style.display = 'none';
+  
+  try {
+    // Convert screenshot to base64
+    const screenshotBase64 = await fileToBase64(screenshotFile);
+    
+    console.log('Base64 conversion successful, length:', screenshotBase64.length);
+    console.log('File type:', screenshotFile.type);
+    console.log('File size:', screenshotFile.size);
+    
+    // Send data to Netlify function
+    const result = await sendToNetlifyFunction(telegramId, screenshotBase64);
+    
+    console.log('Webhook response:', result);
+    
+    if (result.success) {
+      // Show success message
+      successMessage.style.display = 'block';
       errorMessage.style.display = 'none';
       
-      try {
-        // Convert screenshot to base64
-        const screenshotBase64 = await fileToBase64(screenshotFile);
-        
-        console.log('Base64 conversion successful, length:', screenshotBase64.length);
-        
-        // Send data to Netlify function
-        const result = await sendToNetlifyFunction(telegramId, screenshotBase64);
-        
-        console.log('Webhook response:', result);
-        
-        if (result.success) {
-          // Show success message
-          successMessage.style.display = 'block';
-          errorMessage.style.display = 'none';
-          
-          // Redirect after 3 seconds
-          setTimeout(() => {
-            window.location.href = "https://telegram.dog/ownerayush";
-          }, 3000);
-        } else {
-          throw new Error(result.error || 'Unknown error from server');
-        }
-        
-      } catch (error) {
-        console.error('Error in processPayment:', error);
-        successMessage.style.display = 'none';
-        errorMessage.style.display = 'block';
-        errorMessage.textContent = '❌ ' + error.message + '. Please contact @ownerayush directly on Telegram.';
-        
-        // Reset loader
-        loader.style.display = 'none';
-        btnText.style.visibility = 'visible';
+      if (result.screenshotSent) {
+        successMessage.textContent = '✅ Payment details and screenshot submitted successfully! You will receive access shortly.';
+      } else {
+        successMessage.textContent = '✅ Payment details received! Screenshot processing failed. Please send it directly to @ownerayush on Telegram.';
       }
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = "https://telegram.dog/ownerayush";
+      }, 2000);
+    } else {
+      throw new Error(result.error || 'Unknown error from server');
     }
+    
+  } catch (error) {
+    console.error('Error in processPayment:', error);
+    successMessage.style.display = 'none';
+    errorMessage.style.display = 'block';
+    errorMessage.textContent = '❌ ' + error.message + '. Please contact @ownerayush directly on Telegram.';
+    
+    // Reset loader
+    loader.style.display = 'none';
+    btnText.style.visibility = 'visible';
+  }
+}
 
     // ===== INITIALIZATION =====
     document.addEventListener('DOMContentLoaded', function() {
